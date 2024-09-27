@@ -30,8 +30,10 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	AActor* Owner = GetOwner();
+	FVector OwnerLocation = Owner->GetActorLocation();
+	FString OwnerLocationString = OwnerLocation.ToCompactString();
 
-	UE_LOG(LogTemp, Display, TEXT("Tick adres %u" ), Owner);
+	UE_LOG(LogTemp, Display, TEXT("Tick adres %s" ), *OwnerLocationString);
 	
 }
 
