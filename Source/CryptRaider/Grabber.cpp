@@ -3,6 +3,7 @@
 
 #include "Grabber.h"
 #include "Engine/World.h"
+#include "DrawDebugHelpers.h"
 
 
 
@@ -31,12 +32,9 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	FRotator MyRotation = GetComponentRotation();
-	FString MyString = MyRotation.ToCompactString();
-	UE_LOG(LogTemp, Display, TEXT("GRABBER ROTATÝON : %s"), *MyString);
-
-	float time = GetWorld()->TimeSeconds;
-	UE_LOG(LogTemp, Display, TEXT("Time %f"), time);
+	FVector Start = GetComponentLocation();
+	FVector End = Start + GetForwardVector() * MaxGrabDistance;
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
+	
 }
 
