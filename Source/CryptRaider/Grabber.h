@@ -29,4 +29,7 @@ private:
 		
 	UPROPERTY(EditAnywhere)
 	float GrapRadius = 100;
+
+	UFUNCTION(BlueprintCallable)
+	void Release();
 };
