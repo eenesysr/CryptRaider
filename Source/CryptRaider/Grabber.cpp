@@ -4,7 +4,7 @@
 #include "Grabber.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
-
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 
 // Sets default values for this component's properties
@@ -23,7 +23,16 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle != nullptr)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Got Pyhsics Handle %s"),*PhysicsHandle->GetName());
+		
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not Pyhsics Handle Found"));
+	}
 	
 }
 
@@ -32,27 +41,47 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if(PhysicsHandle == nullptr)
+	{
+		return;
+	}
+	FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
+	PhysicsHandle->SetTargetLocationAndRotation(TargetLocation , GetComponentRotation());
+}
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Display, TEXT("Released "));
+}
+void UGrabber::Garb()
+{
+	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if(PhysicsHandle == nullptr)
+	{
+		return;
+	}
 	FVector Start = GetComponentLocation();
 	FVector End = Start + GetForwardVector() * MaxGrabDistance;
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
-	
+	DrawDebugSphere(GetWorld(),End,10,10,FColor::Blue,true,5);
+
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrapRadius);
 	FHitResult HitResult;
 	bool HasHit = GetWorld()->SweepSingleByChannel(HitResult,Start,End,FQuat::Identity, ECC_GameTraceChannel2,Sphere);
 	if (HasHit)
 	{
-		AActor* HitActor = HitResult.GetActor();
-		UE_LOG(LogTemp, Display, TEXT("Hit Result %s"), *HitActor->GetActorNameOrLabel());
+		PhysicsHandle->GrabComponentAtLocationWithRotation(
+			HitResult.GetComponent(),
+			NAME_None,
+			HitResult.Location,
+			GetComponentRotation()
+		);
 	}
 	else
 	{
 		
-		UE_LOG(LogTemp, Display, TEXT("No Hit ") );
 	}
-}
-void UGrabber::Release()
-{
-
 }
 
 

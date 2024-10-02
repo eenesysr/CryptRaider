@@ -30,6 +30,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	float GrapRadius = 100;
 
+	UPROPERTY(EditAnywhere)
+	float HoldDistance = 100;
+
 	UFUNCTION(BlueprintCallable)
 	void Release();
+
+	UFUNCTION(BlueprintCallable)
+	void Garb();
 };
