@@ -4,7 +4,6 @@
 #include "Grabber.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
-#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 
 // Sets default values for this component's properties
@@ -23,16 +22,7 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle != nullptr)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Got Pyhsics Handle %s"),*PhysicsHandle->GetName());
-		
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Not Pyhsics Handle Found"));
-	}
+
 	
 }
 
@@ -42,21 +32,34 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle();
 	if(PhysicsHandle == nullptr)
 	{
 		return;
 	}
-	FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
-	PhysicsHandle->SetTargetLocationAndRotation(TargetLocation , GetComponentRotation());
+	if(PhysicsHandle->GetGrabbedComponent() != nullptr)
+	{
+		FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
+		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation , GetComponentRotation());
+	}
+	
 }
 void UGrabber::Release()
 {
-	UE_LOG(LogTemp, Display, TEXT("Released "));
+	UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle();
+	if (PhysicsHandle == nullptr)
+	{
+		return;
+	}
+	if(PhysicsHandle->GetGrabbedComponent() != nullptr)
+	{
+		PhysicsHandle->ReleaseComponent();
+	}
+	
 }
 void UGrabber::Garb()
 {
-	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle();
 	if(PhysicsHandle == nullptr)
 	{
 		return;
@@ -80,9 +83,19 @@ void UGrabber::Garb()
 	}
 	else
 	{
-		
+		 Release();
 	}
 }
+UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
+{
+	UPhysicsHandleComponent* Result = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if(Result ==nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Grabber requirest a PhysicsHandleComponent."));
+	}
+	return Result;
+}
+
 
 
 
