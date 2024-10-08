@@ -24,13 +24,11 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	AActor * Actor = GetAcceptableActor();
 	if(Actor != nullptr)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Girdi"));
-		Mover->SetShouldMove(true);
+		UE_LOG(LogTemp, Display, TEXT("Unlocking"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("Çıktı"));
-		Mover->SetShouldMove(false);
+		UE_LOG(LogTemp, Display, TEXT("Relocking"));
 	}
 
 	
@@ -52,9 +50,4 @@ AActor* UTriggerComponent::GetAcceptableActor() const
 	}
 	return nullptr;
 }
-void UTriggerComponent::SetMover(UMover* NewMover)
-{
-	Mover = NewMover;
-}
-
 

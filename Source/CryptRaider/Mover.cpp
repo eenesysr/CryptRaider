@@ -32,9 +32,6 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 	AActor* Owner = GetOwner();
 	FVector OwnerLocation = Owner->GetActorLocation();
 	
-}
-void UMover::SetShouldMove(bool NewShouldMove)
-{
-	ShouldMove = NewShouldMove;
+	
 }
 
