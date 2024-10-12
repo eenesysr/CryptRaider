@@ -26,12 +26,17 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	AActor * Actor = GetAcceptableActor();
 	if(Actor != nullptr)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Girdi"));
+		UPrimitiveComponent* Component = Cast<UPrimitiveComponent>(Actor->GetRootComponent());
+		if(Component != nullptr)
+		{
+		Component->SetSimulatePhysics(false);
+		}
+		Actor->AttachToComponent(this,FAttachmentTransformRules::KeepWorldTransform);
 		Mover->SetShouldMove(true);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("Çıktı"));
+		
 		Mover->SetShouldMove(false);
 	}
 
@@ -46,7 +51,9 @@ AActor* UTriggerComponent::GetAcceptableActor() const
 	
 	for (AActor* Actor : Actors)
 	{
-		if(Actor->ActorHasTag(AcceptableNameTag))
+		bool AcceptableHasTag = Actor->ActorHasTag(AcceptableNameTag);
+		bool IsGrabbed = Actor->ActorHasTag("Grabbed");
+		if(AcceptableHasTag && !IsGrabbed)
 		{
 			return Actor;	
 		}
